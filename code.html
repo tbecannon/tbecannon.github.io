@@ -4,6 +4,38 @@
     <meta charset="UTF-8">
     <title>Code | Thomas Becannon</title>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .terminal {
+            background-color: #111;
+            color: #00ff90;
+            padding: 1.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1rem;
+            max-width: 900px;
+            margin: 3rem auto;
+            min-height: 400px;
+        }
+
+        .line {
+            white-space: pre-wrap;
+        }
+
+        .prompt {
+            color: #00ff90;
+        }
+
+        input {
+            background: none;
+            border: none;
+            color: #00ff90;
+            font-family: monospace;
+            font-size: 1rem;
+            outline: none;
+            width: 90%;
+        }
+    </style>
 </head>
 <body>
 
@@ -13,23 +45,100 @@
     <a href="code.html">Code</a>
 </nav>
 
-<main>
-    <h1>Code</h1>
+<div class="terminal" id="terminal">
+    <div class="line">Thomas Becannon — Code Terminal</div>
+    <div class="line">Type <strong>help</strong> to see available commands.</div>
+    <br>
+    <div class="line">
+        <span class="prompt">$</span>
+        <input type="text" id="commandInput" autofocus>
+    </div>
+</div>
 
-    <p>
-        <strong>Whack-A-Mole (C)</strong><br>
-        Terminal-based game using the curses library.
-    </p>
+<script>
+const terminal = document.getElementById("terminal");
+const input = document.getElementById("commandInput");
 
-    <p>
-        <strong>Multi-Process Game</strong><br>
-        IPC using pipes and fork/exec.
-    </p>
+const commands = {
+    help: () => [
+        "Available commands:",
+        "  help        Show this message",
+        "  ls          List projects",
+        "  projects    Same as ls",
+        "  open <name> Open project info",
+        "  clear       Clear the terminal"
+    ],
 
-    <p>
-        More projects coming soon.
-    </p>
-</main>
+    ls: () => [
+        "whack-a-mole",
+        "ipc-game",
+        "more-coming-soon"
+    ],
+
+    projects: () => commands.ls(),
+
+    open: (arg) => {
+        if (!arg) return ["Usage: open <project-name>"];
+
+        if (arg === "whack-a-mole") {
+            return [
+                "Whack-A-Mole (C)",
+                "Terminal-based game using curses.",
+                "GitHub: https://github.com/yourusername/whack-a-mole"
+            ];
+        }
+
+        if (arg === "ipc-game") {
+            return [
+                "Multi-Process Game",
+                "Uses fork, exec, and pipes.",
+                "GitHub: https://github.com/yourusername/ipc-game"
+            ];
+        }
+
+        return [`Project not found: ${arg}`];
+    }
+};
+
+input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        const value = input.value.trim();
+        input.value = "";
+
+        printLine(`$ ${value}`);
+
+        if (value === "") return;
+
+        if (value === "clear") {
+            terminal.innerHTML = "";
+            return;
+        }
+
+        const [cmd, ...args] = value.split(" ");
+        const handler = commands[cmd];
+
+        if (!handler) {
+            printLine(`Command not found: ${cmd}`);
+        } else {
+            const output = handler(args.join(" "));
+            output.forEach(line => printLine(line));
+        }
+
+        newPrompt();
+    }
+});
+
+function printLine(text) {
+    const div = document.createElement("div");
+    div.className = "line";
+    div.textContent = text;
+    terminal.insertBefore(div, input.parentElement);
+}
+
+function newPrompt() {
+    terminal.scrollTop = terminal.scrollHeight;
+}
+</script>
 
 </body>
 </html>
