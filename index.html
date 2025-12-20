@@ -3,62 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secret File</title>
+<title>Christmas Chrisso</title>
 
 <style>
+    * {
+        box-sizing: border-box;
+    }
+
     body {
         margin: 0;
         height: 100vh;
-        font-family: sans-serif;
         overflow: hidden;
+        font-family: sans-serif;
+        color: white;
     }
 
     /* ---------- PASSWORD SCREEN ---------- */
-    #lockScreen {
+    #passwordScreen {
         position: fixed;
         inset: 0;
         background: black;
-        color: white;
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
+        flex-direction: column;
         z-index: 10;
+        transition: opacity 0.8s ease;
     }
 
-    #lockScreen input {
-        margin-top: 12px;
+    #passwordScreen input {
+        padding: 12px;
         font-size: 1.2em;
-        padding: 10px;
-        border-radius: 6px;
+        border-radius: 8px;
         border: none;
-        outline: none;
         text-align: center;
     }
 
-    /* ---------- CHRISTMAS SCREEN ---------- */
-    #christmasScreen {
-        position: fixed;
-        inset: 0;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        flex-direction: column;
+    #passwordScreen p {
+        margin-top: 10px;
+        font-size: 0.9em;
+        opacity: 0.7;
     }
 
-    #christmasScreen.active::before {
+    /* ---------- SHARED BACKGROUND ---------- */
+    #app {
+        display: none;
+        height: 100vh;
+    }
+
+    #app::before {
         content: "";
-        position: absolute;
+        position: fixed;
         inset: 0;
         background: linear-gradient(to right, lightgreen 50%, lightcoral 50%);
         animation: flipColors 2s steps(1) infinite;
         z-index: -1;
     }
 
-    .message {
+    @keyframes flipColors {
+        0% { background: linear-gradient(to right, lightgreen 50%, lightcoral 50%); }
+        50% { background: linear-gradient(to right, lightcoral 50%, lightgreen 50%); }
+        100% { background: linear-gradient(to right, lightgreen 50%, lightcoral 50%); }
+    }
+
+    /* ---------- SWIPE PAGES ---------- */
+    .pages {
+        display: flex;
+        width: 300vw;
+        height: 100vh;
+        transition: transform 0.4s ease;
+    }
+
+    .page {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         text-align: center;
-        z-index: 1;
+        padding: 20px;
+        flex-direction: column;
+        animation: fadeIn 1.2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     h1 {
@@ -67,59 +97,17 @@
     }
 
     h2 {
-        font-size: 1.2em;
+        font-size: 1.5em;
         font-weight: normal;
-        margin-top: 10px;
-        opacity: 0;
-        animation: fadeIn 2s ease forwards;
-        animation-delay: 1.5s;
+        margin: 0;
     }
 
     /* ---------- COUNTER ---------- */
-    #counter {
-        position: fixed;
-        bottom: 25px;
-        text-align: center;
-        font-size: 1em;
-        opacity: 0.9;
-        z-index: 2;
-    }
-
     #counter span {
+        margin-top: 10px;
         display: block;
-        margin-top: 4px;
-        font-size: 1.3em;
+        font-size: 2em;
         font-weight: bold;
-    }
-
-    /* ---------- ANIMATIONS ---------- */
-    @keyframes flipColors {
-        0% {
-            background: linear-gradient(to right, lightgreen 50%, lightcoral 50%);
-        }
-        50% {
-            background: linear-gradient(to right, lightcoral 50%, lightgreen 50%);
-        }
-        100% {
-            background: linear-gradient(to right, lightgreen 50%, lightcoral 50%);
-        }
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 0.9;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes fall {
-        to {
-            transform: translateY(110vh);
-        }
     }
 
     /* ---------- SNOW & HEARTS ---------- */
@@ -130,13 +118,11 @@
         animation: fall linear infinite;
     }
 
-    .snowflake {
-        color: white;
-        z-index: 4;
-    }
+    .snowflake { z-index: 3; }
+    .heart { z-index: 2; }
 
-    .heart {
-        z-index: 3;
+    @keyframes fall {
+        to { transform: translateY(110vh); }
     }
 </style>
 </head>
@@ -144,99 +130,119 @@
 <body>
 
 <!-- PASSWORD SCREEN -->
-<div id="lockScreen">
-    <div>enter password</div>
-    <input type="password" id="passwordInput" autofocus>
+<div id="passwordScreen">
+    <input id="passwordInput" type="password" placeholder="password">
+    <p>hint: 🧀</p>
 </div>
 
-<!-- CHRISTMAS SCREEN -->
-<div id="christmasScreen">
-    <div class="message">
-        <h1>merry christmas chrisso!</h1>
-        <h2>it’s our 3rd Christmas together!</h2>
-    </div>
+<!-- APP -->
+<div id="app">
+    <div class="pages" id="pages">
+        <div class="page">
+            <h1>merry christmas chrisso!</h1>
+        </div>
 
-    <div id="counter">
-        how long we’ve been together
-        <span id="counterValue"></span>
+        <div class="page">
+            <h2>it’s our 3rd Christmas together!</h2>
+        </div>
+
+        <div class="page" id="counter">
+            <div>
+                how long we’ve been together
+                <span id="counterValue"></span>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
+    /* ---------- PASSWORD LOGIC ---------- */
     const input = document.getElementById("passwordInput");
-    const lockScreen = document.getElementById("lockScreen");
-    const christmasScreen = document.getElementById("christmasScreen");
-    const counterValue = document.getElementById("counterValue");
+    const passwordScreen = document.getElementById("passwordScreen");
+    const app = document.getElementById("app");
 
+    input.addEventListener("keydown", e => {
+        if (e.key === "Enter" && input.value === "cheese") {
+            passwordScreen.style.opacity = 0;
+            setTimeout(() => {
+                passwordScreen.style.display = "none";
+                app.style.display = "block";
+            }, 800);
+        }
+    });
+
+    /* ---------- SWIPE LOGIC ---------- */
+    const pages = document.getElementById("pages");
+    let currentPage = 0;
+    let startX = 0;
+
+    function updatePage() {
+        pages.style.transform = `translateX(-${currentPage * 100}vw)`;
+    }
+
+    document.addEventListener("touchstart", e => {
+        startX = e.touches[0].clientX;
+    });
+
+    document.addEventListener("touchend", e => {
+        handleSwipe(startX - e.changedTouches[0].clientX);
+    });
+
+    document.addEventListener("wheel", e => {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+            handleSwipe(e.deltaX);
+        }
+    });
+
+    function handleSwipe(distance) {
+        if (distance > 50 && currentPage < 2) currentPage++;
+        if (distance < -50 && currentPage > 0) currentPage--;
+        updatePage();
+    }
+
+    /* ---------- COUNTER ---------- */
+    const counterValue = document.getElementById("counterValue");
     const startDate = new Date("November 26, 2023 20:00:00");
 
     const units = [
-        { name: "seconds", value: ms => Math.floor(ms / 1000) },
-        { name: "minutes", value: ms => Math.floor(ms / (1000 * 60)) },
-        { name: "days", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24)) },
-        { name: "weeks", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24 * 7)) },
-        { name: "months", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24 * 30.44)) },
-        { name: "years", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24 * 365.25)) }
+        { name: "seconds", fn: ms => Math.floor(ms / 1000) },
+        { name: "minutes", fn: ms => Math.floor(ms / 60000) },
+        { name: "days", fn: ms => Math.floor(ms / 86400000) },
+        { name: "weeks", fn: ms => Math.floor(ms / 604800000) },
+        { name: "months", fn: ms => Math.floor(ms / (86400000 * 30.44)) },
+        { name: "years", fn: ms => Math.floor(ms / (86400000 * 365.25)) }
     ];
 
     let unitIndex = 0;
 
-    input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            if (input.value.toLowerCase() === "cheese") {
-                lockScreen.style.display = "none";
-                christmasScreen.style.display = "flex";
-                christmasScreen.classList.add("active");
-                startSnow();
-                startHearts();
-                startCounter();
-            } else {
-                input.value = "";
-            }
-        }
-    });
+    setInterval(() => {
+        const diff = new Date() - startDate;
+        counterValue.textContent = `${units[unitIndex].fn(diff)} ${units[unitIndex].name}`;
+    }, 1000);
 
-    function startCounter() {
-        setInterval(() => {
-            const now = new Date();
-            const diff = now - startDate;
-            const unit = units[unitIndex];
-            counterValue.textContent = `${unit.value(diff)} ${unit.name}`;
-        }, 1000);
+    setInterval(() => {
+        unitIndex = (unitIndex + 1) % units.length;
+    }, 5000);
 
-        setInterval(() => {
-            unitIndex = (unitIndex + 1) % units.length;
-        }, 5000);
+    /* ---------- SNOW & HEARTS ---------- */
+    for (let i = 0; i < 40; i++) {
+        const s = document.createElement("div");
+        s.className = "snowflake";
+        s.textContent = "❄";
+        s.style.left = Math.random() * 100 + "vw";
+        s.style.fontSize = Math.random() * 1.5 + 0.5 + "em";
+        s.style.animationDuration = Math.random() * 5 + 5 + "s";
+        document.body.appendChild(s);
     }
 
-    function startSnow() {
-        for (let i = 0; i < 40; i++) {
-            const snowflake = document.createElement("div");
-            snowflake.className = "snowflake";
-            snowflake.textContent = "❄";
-
-            snowflake.style.left = Math.random() * 100 + "vw";
-            snowflake.style.fontSize = (Math.random() * 1.5 + 0.5) + "em";
-            snowflake.style.animationDuration = (Math.random() * 5 + 5) + "s";
-            snowflake.style.animationDelay = Math.random() * 5 + "s";
-
-            document.body.appendChild(snowflake);
-        }
-    }
-
-    function startHearts() {
-        for (let i = 0; i < 15; i++) {
-            const heart = document.createElement("div");
-            heart.className = "heart";
-            heart.textContent = "❤️";
-
-            heart.style.left = Math.random() * 100 + "vw";
-            heart.style.fontSize = (Math.random() * 1.5 + 1) + "em";
-            heart.style.animationDuration = (Math.random() * 6 + 6) + "s";
-            heart.style.animationDelay = Math.random() * 5 + "s";
-
-            document.body.appendChild(heart);
-        }
+    for (let i = 0; i < 15; i++) {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.textContent = "❤️";
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.fontSize = Math.random() * 1.5 + 1 + "em";
+        h.style.animationDuration = Math.random() * 6 + 6 + "s";
+        document.body.appendChild(h);
     }
 </script>
 
