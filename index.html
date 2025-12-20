@@ -6,60 +6,27 @@
 <title>Christmas Chrisso</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        margin: 0;
-        height: 100vh;
-        overflow: hidden;
-        font-family: sans-serif;
-        color: white;
-    }
+    * { box-sizing: border-box; }
+    body { margin:0; height:100vh; overflow:hidden; font-family:sans-serif; color:white; }
 
     /* ---------- PASSWORD SCREEN ---------- */
     #passwordScreen {
-        position: fixed;
-        inset: 0;
-        background: black;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        z-index: 10;
-        transition: opacity 0.8s ease;
+        position: fixed; inset:0; background:black;
+        display:flex; justify-content:center; align-items:center;
+        flex-direction:column; z-index:10; transition:opacity 0.8s ease;
     }
-
     #passwordScreen input {
-        padding: 12px;
-        font-size: 1.2em;
-        border-radius: 8px;
-        border: none;
-        text-align: center;
+        padding:12px; font-size:1.2em; border-radius:8px; border:none; text-align:center;
     }
-
-    #passwordScreen p {
-        margin-top: 10px;
-        font-size: 0.9em;
-        opacity: 0.7;
-    }
+    #passwordScreen p { margin-top:10px; font-size:0.9em; opacity:0.7; }
 
     /* ---------- SHARED BACKGROUND ---------- */
-    #app {
-        display: none;
-        height: 100vh;
-    }
-
+    #app { display:none; height:100vh; position:relative; }
     #app::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background: linear-gradient(to right, lightgreen 50%, lightcoral 50%);
-        animation: flipColors 2s steps(1) infinite;
-        z-index: -1;
+        content:""; position:fixed; inset:0;
+        background:linear-gradient(to right, lightgreen 50%, lightcoral 50%);
+        animation: flipColors 2s steps(1) infinite; z-index:-1;
     }
-
     @keyframes flipColors {
         0% { background: linear-gradient(to right, lightgreen 50%, lightcoral 50%); }
         50% { background: linear-gradient(to right, lightcoral 50%, lightgreen 50%); }
@@ -67,63 +34,31 @@
     }
 
     /* ---------- SWIPE PAGES ---------- */
-    .pages {
-        display: flex;
-        width: 300vw;
-        height: 100vh;
-        transition: transform 0.4s ease;
-    }
-
+    .pages { display:flex; width:400vw; height:100vh; transition:transform 0.4s ease; }
     .page {
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
-        flex-direction: column;
-        animation: fadeIn 1.2s ease forwards;
+        width:100vw; height:100vh; display:flex; justify-content:center; align-items:center;
+        text-align:center; padding:20px; flex-direction:column; animation:fadeIn 1.2s ease forwards;
     }
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    h1 {
-        font-size: 2.5em;
-        margin: 0;
-    }
-
-    h2 {
-        font-size: 1.5em;
-        font-weight: normal;
-        margin: 0;
-    }
+    h1 { font-size:2.5em; margin:0; }
+    h2 { font-size:1.5em; font-weight:normal; margin:0; }
 
     /* ---------- COUNTER ---------- */
-    #counter span {
-        margin-top: 10px;
-        display: block;
-        font-size: 2em;
-        font-weight: bold;
-    }
+    #counter span { margin-top:10px; display:block; font-size:2em; font-weight:bold; }
 
     /* ---------- SNOW & HEARTS ---------- */
-    .snowflake, .heart {
-        position: fixed;
-        top: -10px;
-        pointer-events: none;
-        animation: fall linear infinite;
-    }
+    .snowflake, .heart { position:fixed; top:-10px; pointer-events:none; animation:fall linear infinite; }
+    .snowflake { z-index:3; } .heart { z-index:2; }
+    @keyframes fall { to { transform:translateY(110vh); } }
 
-    .snowflake { z-index: 3; }
-    .heart { z-index: 2; }
-
-    @keyframes fall {
-        to { transform: translateY(110vh); }
+    /* ---------- PAGE INDICATOR DOTS ---------- */
+    #dots { position:fixed; bottom:20px; width:100%; display:flex; justify-content:center; z-index:4; }
+    .dot {
+        width:12px; height:12px; margin:0 6px;
+        border-radius:50%; background:white; opacity:0.4; transition:opacity 0.3s;
     }
+    .dot.active { opacity:1; }
 </style>
 </head>
 
@@ -141,109 +76,95 @@
         <div class="page">
             <h1>merry christmas chrisso!</h1>
         </div>
-
         <div class="page">
             <h2>it’s our 3rd Christmas together!</h2>
         </div>
-
         <div class="page" id="counter">
             <div>
                 how long we’ve been together
                 <span id="counterValue"></span>
             </div>
         </div>
+        <div class="page">
+            <h1>🍅🧀</h1>
+        </div>
+    </div>
+    <div id="dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
     </div>
 </div>
 
 <script>
-    /* ---------- PASSWORD LOGIC ---------- */
-    const input = document.getElementById("passwordInput");
-    const passwordScreen = document.getElementById("passwordScreen");
-    const app = document.getElementById("app");
-
-    input.addEventListener("keydown", e => {
-        if (e.key === "Enter" && input.value === "cheese") {
-            passwordScreen.style.opacity = 0;
-            setTimeout(() => {
-                passwordScreen.style.display = "none";
-                app.style.display = "block";
-            }, 800);
-        }
-    });
-
-    /* ---------- SWIPE LOGIC ---------- */
-    const pages = document.getElementById("pages");
-    let currentPage = 0;
-    let startX = 0;
-
-    function updatePage() {
-        pages.style.transform = `translateX(-${currentPage * 100}vw)`;
+/* ---------- PASSWORD LOGIC ---------- */
+const input = document.getElementById("passwordInput");
+const passwordScreen = document.getElementById("passwordScreen");
+const app = document.getElementById("app");
+input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && input.value === "cheese") {
+        passwordScreen.style.opacity=0;
+        setTimeout(()=>{ passwordScreen.style.display="none"; app.style.display="block"; }, 800);
     }
+});
 
-    document.addEventListener("touchstart", e => {
-        startX = e.touches[0].clientX;
-    });
+/* ---------- SWIPE LOGIC ---------- */
+const pages = document.getElementById("pages");
+const dots = document.querySelectorAll(".dot");
+let currentPage = 0;
+let startX = 0;
 
-    document.addEventListener("touchend", e => {
-        handleSwipe(startX - e.changedTouches[0].clientX);
-    });
+function updatePage() {
+    pages.style.transform = `translateX(-${currentPage*100}vw)`;
+    dots.forEach((d,i)=>d.classList.toggle("active", i===currentPage));
+}
 
-    document.addEventListener("wheel", e => {
-        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-            handleSwipe(e.deltaX);
-        }
-    });
+document.addEventListener("touchstart", e=>startX=e.touches[0].clientX);
+document.addEventListener("touchend", e=>handleSwipe(startX - e.changedTouches[0].clientX));
+document.addEventListener("wheel", e=>{ if(Math.abs(e.deltaX)>Math.abs(e.deltaY)) handleSwipe(e.deltaX); });
 
-    function handleSwipe(distance) {
-        if (distance > 50 && currentPage < 2) currentPage++;
-        if (distance < -50 && currentPage > 0) currentPage--;
-        updatePage();
-    }
+function handleSwipe(distance){
+    if(distance>50 && currentPage<3) currentPage++;
+    if(distance<-50 && currentPage>0) currentPage--;
+    updatePage();
+}
 
-    /* ---------- COUNTER ---------- */
-    const counterValue = document.getElementById("counterValue");
-    const startDate = new Date("November 26, 2023 20:00:00");
+/* ---------- COUNTER ---------- */
+const counterValue = document.getElementById("counterValue");
+const startDate = new Date("November 26, 2023 20:00:00");
+const units = [
+    { name:"seconds", fn: ms=>Math.floor(ms/1000)},
+    { name:"minutes", fn: ms=>Math.floor(ms/60000)},
+    { name:"days", fn: ms=>Math.floor(ms/86400000)},
+    { name:"weeks", fn: ms=>Math.floor(ms/604800000)},
+    { name:"months", fn: ms=>Math.floor(ms/(86400000*30.44))},
+    { name:"years", fn: ms=>Math.floor(ms/(86400000*365.25))}
+];
+let unitIndex=0;
+setInterval(()=>{
+    const diff = new Date() - startDate;
+    counterValue.textContent = `${units[unitIndex].fn(diff)} ${units[unitIndex].name}`;
+}, 1000);
+setInterval(()=>{ unitIndex=(unitIndex+1)%units.length; }, 5000);
 
-    const units = [
-        { name: "seconds", fn: ms => Math.floor(ms / 1000) },
-        { name: "minutes", fn: ms => Math.floor(ms / 60000) },
-        { name: "days", fn: ms => Math.floor(ms / 86400000) },
-        { name: "weeks", fn: ms => Math.floor(ms / 604800000) },
-        { name: "months", fn: ms => Math.floor(ms / (86400000 * 30.44)) },
-        { name: "years", fn: ms => Math.floor(ms / (86400000 * 365.25)) }
-    ];
-
-    let unitIndex = 0;
-
-    setInterval(() => {
-        const diff = new Date() - startDate;
-        counterValue.textContent = `${units[unitIndex].fn(diff)} ${units[unitIndex].name}`;
-    }, 1000);
-
-    setInterval(() => {
-        unitIndex = (unitIndex + 1) % units.length;
-    }, 5000);
-
-    /* ---------- SNOW & HEARTS ---------- */
-    for (let i = 0; i < 40; i++) {
-        const s = document.createElement("div");
-        s.className = "snowflake";
-        s.textContent = "❄";
-        s.style.left = Math.random() * 100 + "vw";
-        s.style.fontSize = Math.random() * 1.5 + 0.5 + "em";
-        s.style.animationDuration = Math.random() * 5 + 5 + "s";
-        document.body.appendChild(s);
-    }
-
-    for (let i = 0; i < 15; i++) {
-        const h = document.createElement("div");
-        h.className = "heart";
-        h.textContent = "❤️";
-        h.style.left = Math.random() * 100 + "vw";
-        h.style.fontSize = Math.random() * 1.5 + 1 + "em";
-        h.style.animationDuration = Math.random() * 6 + 6 + "s";
-        document.body.appendChild(h);
-    }
+/* ---------- SNOW & HEARTS ---------- */
+for(let i=0;i<40;i++){
+    const s=document.createElement("div");
+    s.className="snowflake"; s.textContent="❄";
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=Math.random()*1.5+0.5+"em";
+    s.style.animationDuration=Math.random()*5+5+"s";
+    document.body.appendChild(s);
+}
+for(let i=0;i<15;i++){
+    const h=document.createElement("div");
+    h.className="heart"; h.textContent="❤️";
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize=Math.random()*1.5+1+"em";
+    h.style.animationDuration=Math.random()*6+6+"s";
+    document.body.appendChild(h);
+}
 </script>
 
 </body>
