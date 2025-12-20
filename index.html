@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secret Christmas</title>
+<title>Secret File</title>
 
 <style>
     body {
@@ -44,6 +44,7 @@
         justify-content: center;
         align-items: center;
         color: white;
+        flex-direction: column;
     }
 
     #christmasScreen.active::before {
@@ -72,6 +73,23 @@
         opacity: 0;
         animation: fadeIn 2s ease forwards;
         animation-delay: 1.5s;
+    }
+
+    /* ---------- COUNTER ---------- */
+    #counter {
+        position: fixed;
+        bottom: 25px;
+        text-align: center;
+        font-size: 1em;
+        opacity: 0.9;
+        z-index: 2;
+    }
+
+    #counter span {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.3em;
+        font-weight: bold;
     }
 
     /* ---------- ANIMATIONS ---------- */
@@ -137,12 +155,31 @@
         <h1>merry christmas chrisso!</h1>
         <h2>it’s our 3rd Christmas together!</h2>
     </div>
+
+    <div id="counter">
+        how long we’ve been together
+        <span id="counterValue"></span>
+    </div>
 </div>
 
 <script>
     const input = document.getElementById("passwordInput");
     const lockScreen = document.getElementById("lockScreen");
     const christmasScreen = document.getElementById("christmasScreen");
+    const counterValue = document.getElementById("counterValue");
+
+    const startDate = new Date("November 26, 2023 20:00:00");
+
+    const units = [
+        { name: "seconds", value: ms => Math.floor(ms / 1000) },
+        { name: "minutes", value: ms => Math.floor(ms / (1000 * 60)) },
+        { name: "days", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24)) },
+        { name: "weeks", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24 * 7)) },
+        { name: "months", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24 * 30.44)) },
+        { name: "years", value: ms => Math.floor(ms / (1000 * 60 * 60 * 24 * 365.25)) }
+    ];
+
+    let unitIndex = 0;
 
     input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
@@ -152,11 +189,25 @@
                 christmasScreen.classList.add("active");
                 startSnow();
                 startHearts();
+                startCounter();
             } else {
                 input.value = "";
             }
         }
     });
+
+    function startCounter() {
+        setInterval(() => {
+            const now = new Date();
+            const diff = now - startDate;
+            const unit = units[unitIndex];
+            counterValue.textContent = `${unit.value(diff)} ${unit.name}`;
+        }, 1000);
+
+        setInterval(() => {
+            unitIndex = (unitIndex + 1) % units.length;
+        }, 5000);
+    }
 
     function startSnow() {
         for (let i = 0; i < 40; i++) {
