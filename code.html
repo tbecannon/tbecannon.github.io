@@ -2,20 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive code terminal - Explore Thomas Becannon's projects">
     <title>Code | Thomas Becannon</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
 
     <style>
         .terminal {
-            background-color: #111;
-            color: #00ff90;
+            background-color: #0d0d0d;
+            color: #00ff9c;
             padding: 1.5rem;
-            border-radius: 6px;
+            border-radius: 8px;
             font-family: monospace;
             font-size: 1rem;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 3rem auto;
-            min-height: 400px;
+            min-height: 420px;
+            border: 1px solid #222;
         }
 
         .line {
@@ -23,13 +27,13 @@
         }
 
         .prompt {
-            color: #00ff90;
+            color: #00ff9c;
         }
 
         input {
             background: none;
             border: none;
-            color: #00ff90;
+            color: #00ff9c;
             font-family: monospace;
             font-size: 1rem;
             outline: none;
@@ -40,9 +44,11 @@
 <body>
 
 <nav>
-    <a href="index.html">Home</a>
-    <a href="resume.html">Resume</a>
-    <a href="code.html">Code</a>
+    <div class="nav-inner">
+        <a href="index.html">Home</a>
+        <a href="resume.html">Resume</a>
+        <a href="code.html">Code</a>
+    </div>
 </nav>
 
 <div class="terminal" id="terminal">
@@ -83,16 +89,20 @@ const commands = {
         if (arg === "whack-a-mole") {
             return [
                 "Whack-A-Mole (C)",
-                "Terminal-based game using curses.",
-                "GitHub: https://github.com/yourusername/whack-a-mole"
+                "Terminal-based game using ncurses library.",
+                "Features: Real-time gameplay, scoring, responsive controls",
+                "Tech: C, ncurses, game loop design",
+                "GitHub: https://github.com/tbecannon/whack-a-mole"
             ];
         }
 
         if (arg === "ipc-game") {
             return [
-                "Multi-Process Game",
-                "Uses fork, exec, and pipes.",
-                "GitHub: https://github.com/yourusername/ipc-game"
+                "Multi-Process IPC Game",
+                "Demonstrates inter-process communication patterns.",
+                "Uses fork, exec, pipes for process management",
+                "Tech: C, Unix/Linux, IPC mechanisms",
+                "GitHub: https://github.com/tbecannon/ipc-game"
             ];
         }
 
@@ -139,6 +149,10 @@ function newPrompt() {
     terminal.scrollTop = terminal.scrollHeight;
 }
 </script>
+
+<footer>
+    <p>&copy; 2026 Thomas Becannon. Built with care and attention to detail.</p>
+</footer>
 
 </body>
 </html>
